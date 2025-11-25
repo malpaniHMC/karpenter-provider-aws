@@ -139,6 +139,10 @@ type EC2NodeClassSpec struct {
 	// +kubebuilder:default={"httpEndpoint":"enabled","httpProtocolIPv6":"disabled","httpPutResponseHopLimit":1,"httpTokens":"required"}
 	// +optional
 	MetadataOptions *MetadataOptions `json:"metadataOptions,omitempty"`
+	// KeyName is the name of the SSH key pair to associate with instances.
+	// This field references an existing EC2 key pair and will be used to enable SSH access to nodes.
+	// +optional
+	KeyName *string `json:"keyName,omitempty"`
 	// Context is a Reserved field in EC2 APIs
 	// https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateFleet.html
 	// +optional

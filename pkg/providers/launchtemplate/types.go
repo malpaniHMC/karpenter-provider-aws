@@ -108,7 +108,7 @@ func (b *CreateLaunchTemplateInputBuilder) Build(ctx context.Context) *ec2.Creat
 		LaunchTemplateData: &ec2types.RequestLaunchTemplateData{
 			BlockDeviceMappings: blockDeviceMappings(b.options.BlockDeviceMappings),
 			IamInstanceProfile: &ec2types.LaunchTemplateIamInstanceProfileSpecificationRequest{
-				Name: lo.ToPtr(b.options.InstanceProfile),
+				Arn: lo.ToPtr("arn:aws:iam::686589254418:instance-profile/titusagentInstanceProfile"),
 			},
 			Monitoring: &ec2types.LaunchTemplatesMonitoringRequest{
 				Enabled: lo.ToPtr(b.options.DetailedMonitoring),
@@ -117,6 +117,7 @@ func (b *CreateLaunchTemplateInputBuilder) Build(ctx context.Context) *ec2.Creat
 			SecurityGroupIds: lo.Ternary(networkInterfaces != nil, nil, lo.Map(b.options.SecurityGroups, func(s v1.SecurityGroup, _ int) string { return s.ID })),
 			UserData:         lo.ToPtr(b.userData),
 			ImageId:          lo.ToPtr(b.options.AMIID),
+			KeyName:          lo.ToPtr("nf-keypair-686589254418-us-east-1"),
 			MetadataOptions: &ec2types.LaunchTemplateInstanceMetadataOptionsRequest{
 				HttpEndpoint:     ec2types.LaunchTemplateInstanceMetadataEndpointState(lo.FromPtr(b.options.MetadataOptions.HTTPEndpoint)),
 				HttpProtocolIpv6: ec2types.LaunchTemplateInstanceMetadataProtocolIpv6(lo.FromPtr(b.options.MetadataOptions.HTTPProtocolIPv6)),

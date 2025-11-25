@@ -41,7 +41,7 @@ TEST_SUITE ?= "..."
 TMPFILE := $(shell mktemp)
 
 # Filename when building the binary controller only
-GOARCH ?= $(shell go env GOARCH)
+GOARCH = amd64
 BINARY_FILENAME = karpenter-provider-aws-$(GOARCH)
 
 help: ## Display help

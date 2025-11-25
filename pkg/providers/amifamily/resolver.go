@@ -70,6 +70,7 @@ type Options struct {
 	AssociatePublicIPAddress *bool
 	IPPrefixCount            *int32
 	NodeClassName            string
+	KeyName                  *string
 }
 
 // LaunchTemplate holds the dynamically generated launch template parameters

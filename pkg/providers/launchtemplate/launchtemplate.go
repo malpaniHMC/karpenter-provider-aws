@@ -220,6 +220,7 @@ func (p *DefaultProvider) CreateAMIOptions(ctx context.Context, nodeClass *v1.EC
 		AssociatePublicIPAddress: nodeClass.Spec.AssociatePublicIPAddress,
 		IPPrefixCount:            nodeClass.Spec.IPPrefixCount,
 		NodeClassName:            nodeClass.Name,
+		KeyName:                  nodeClass.Spec.KeyName,
 	}, nil
 }
 
@@ -282,7 +283,7 @@ func generateNetworkInterfaces(options *amifamily.LaunchTemplate, clusterIPFamil
 				InterfaceType:   lo.ToPtr(string(ec2types.NetworkInterfaceTypeEfa)),
 				Ipv4PrefixCount: lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, nil, options.IPPrefixCount),
 				Ipv6PrefixCount: lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, options.IPPrefixCount, nil),
-				Groups:          lo.Map(options.SecurityGroups, func(s v1.SecurityGroup, _ int) string { return s.ID }),
+				Groups:          []string{"sg-095ec9b1261243bb3", "sg-01e82fa3dc56cf93e", "sg-0474b7763903969ba"},
 				// Instances launched with multiple pre-configured network interfaces cannot set AssociatePublicIPAddress to true. This is an EC2 limitation. However, this does not apply for instances
 				// with a single EFA network interface, and we should support those use cases. Launch failures with multiple enis should be considered user misconfiguration.
 				AssociatePublicIpAddress: options.AssociatePublicIPAddress,
@@ -298,12 +299,19 @@ func generateNetworkInterfaces(options *amifamily.LaunchTemplate, clusterIPFamil
 			DeviceIndex:              aws.Int32(0),
 			Ipv4PrefixCount:          lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, nil, options.IPPrefixCount),
 			Ipv6PrefixCount:          lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, options.IPPrefixCount, nil),
-			Groups: lo.Map(options.SecurityGroups, func(s v1.SecurityGroup, _ int) string {
-				return s.ID
-			}),
-			PrimaryIpv6:      lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, lo.ToPtr(true), nil),
-			Ipv6AddressCount: lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, lo.ToPtr(int32(1)), nil),
+			Groups:                   []string{"sg-095ec9b1261243bb3", "sg-01e82fa3dc56cf93e", "sg-0474b7763903969ba"},
+			PrimaryIpv6:              lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, lo.ToPtr(true), nil),
+			Ipv6AddressCount:         lo.Ternary(clusterIPFamily == corev1.IPv6Protocol, lo.ToPtr(int32(1)), nil),
 		},
+		// {
+		// 	DeleteOnTermination: lo.ToPtr(false),
+		// 	Description:         lo.ToPtr("ipmanservice_managed_trunk"),
+		// 	DeviceIndex:         lo.ToPtr(int32(1)),
+		// 	Groups:              []string{"sg-0aa8fd9ef72e87c98"},
+		// 	InterfaceType:       lo.ToPtr(string(ec2types.NetworkInterfaceTypeTrunk)),
+		// 	SubnetId:            lo.ToPtr("subnet-033cfc4b9c6717e66"),
+		// 	NetworkCardIndex:    lo.ToPtr(int32(0)),
+		// },
 	}
 }
 
